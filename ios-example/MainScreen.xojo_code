@@ -73,7 +73,7 @@ Begin MobileScreen MainScreen
       SelectionLength =   0
       SelectionStart  =   0
       Text            =   "00:00"
-      TextColor       =   &c000000
+      TextColor       =   &c00000000
       TextFont        =   "System Bold		"
       TextSize        =   64
       TintColor       =   
@@ -112,16 +112,16 @@ Begin MobileScreen MainScreen
       _ClosingFired   =   False
    End
    Begin MobileToolbarButton PlayPauseButton
-      Caption         =   "Untitled"
+      Caption         =   "Play"
       Enabled         =   True
       Height          =   22
       Icon            =   0
-      Left            =   290
+      Left            =   277
       LockedInPosition=   False
       Scope           =   2
       Top             =   32
-      Type            =   17
-      Width           =   22.0
+      Type            =   1001
+      Width           =   35.0
    End
 End
 #tag EndMobileScreen
@@ -131,7 +131,7 @@ End
 		Sub ToolbarButtonPressed(button As MobileToolbarButton)
 		  Select Case button
 		  Case PlayPauseButton
-		    Var isRunning As Boolean = ViewModel.Mode = PomodoroViewModel.Modes.Running
+		    Var isRunning As Boolean = ViewModel.State = PomodoroViewModel.States.Running
 		    ViewModel.State = If(isRunning, PomodoroViewModel.States.Ready, PomodoroViewModel.States.Running)
 		  End Select
 		End Sub
@@ -152,9 +152,7 @@ End
 		End Sub
 	#tag EndEvent
 	#tag Event
-		Sub RemainingSecondsChanged(totalSeconds As Integer, remainingSeconds As Integer)
-		  Var minutes As Integer = Floor(remainingSeconds / 60)
-		  Var seconds As Integer = remainingSeconds Mod 60
+		Sub RemainingSecondsChanged(minutes As Integer, seconds As Integer)
 		  RemainingTimeLabel.Text = minutes.ToString(Nil, "00") + ":" + seconds.ToString(Nil, "00")
 		End Sub
 	#tag EndEvent
@@ -162,10 +160,10 @@ End
 		Sub StateChanged(newState As PomodoroViewModel.States)
 		  Select Case newState
 		  Case PomodoroViewModel.States.Ready
-		    PlayPauseButton.Type = MobileToolbarButton.Types.Play
+		    PlayPauseButton.Caption = "Start"
 		    SkipButton.Visible = False
 		  Case PomodoroViewModel.States.Running
-		    PlayPauseButton.Type = MobileToolbarButton.Types.Pause
+		    PlayPauseButton.Caption = "Pause"
 		    SkipButton.Visible = True
 		  End Select
 		End Sub
@@ -185,3 +183,154 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
+#tag ViewBehavior
+	#tag ViewProperty
+		Name="Index"
+		Visible=true
+		Group="ID"
+		InitialValue="-2147483648"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Name"
+		Visible=true
+		Group="ID"
+		InitialValue=""
+		Type="String"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Super"
+		Visible=true
+		Group="ID"
+		InitialValue=""
+		Type="String"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Left"
+		Visible=true
+		Group="Position"
+		InitialValue="0"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Top"
+		Visible=true
+		Group="Position"
+		InitialValue="0"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="BackButtonCaption"
+		Visible=true
+		Group="Behavior"
+		InitialValue=""
+		Type="String"
+		EditorType="MultiLineEditor"
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="HasNavigationBar"
+		Visible=true
+		Group="Behavior"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="TabIcon"
+		Visible=true
+		Group="Behavior"
+		InitialValue=""
+		Type="Picture"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="Title"
+		Visible=true
+		Group="Behavior"
+		InitialValue="Untitled"
+		Type="String"
+		EditorType="MultiLineEditor"
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="LargeTitleDisplayMode"
+		Visible=true
+		Group="Behavior"
+		InitialValue="2"
+		Type="MobileScreen.LargeTitleDisplayModes"
+		EditorType="Enum"
+		#tag EnumValues
+			"0 - Automatic"
+			"1 - Always"
+			"2 - Never"
+		#tag EndEnumValues
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="TabBarVisible"
+		Visible=true
+		Group="Behavior"
+		InitialValue="True"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="TintColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="ControlCount"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="ScaleFactor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="Double"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="_mTabBarVisible"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="BackgroundColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="NavigationBarColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="NavigationBarTextColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
+#tag EndViewBehavior
