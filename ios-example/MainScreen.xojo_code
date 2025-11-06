@@ -163,8 +163,10 @@ End
 		  Select Case newState
 		  Case PomodoroViewModel.States.Ready
 		    PlayPauseButton.Type = MobileToolbarButton.Types.Play
+		    SkipButton.Visible = False
 		  Case PomodoroViewModel.States.Running
 		    PlayPauseButton.Type = MobileToolbarButton.Types.Pause
+		    SkipButton.Visible = True
 		  End Select
 		End Sub
 	#tag EndEvent
