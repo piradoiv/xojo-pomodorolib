@@ -2,6 +2,8 @@
 Protected Class PomodoroViewModel
 	#tag Method, Flags = &h0
 		Sub CompleteCurrent()
+		  DebugLog(CurrentMethodName)
+		  
 		  State = States.Ready
 		  Select Case Mode
 		  Case Modes.Pomodoro
@@ -19,6 +21,8 @@ Protected Class PomodoroViewModel
 
 	#tag Method, Flags = &h0
 		Sub Constructor()
+		  DebugLog(CurrentMethodName)
+		  
 		  mInternalTimer = New Timer
 		  mInternalTimer.Period = 250
 		  mInternalTimer.RunMode = Timer.RunModes.Off
@@ -35,26 +39,46 @@ Protected Class PomodoroViewModel
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub DebugLog(message As String)
+		  System.DebugLog(message)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function RemainingMinutesAndSeconds() As Pair
+		  Var minutes As Integer = Floor(mRemainingSeconds / 60)
+		  Var seconds As Integer = mRemainingSeconds Mod 60
+		  
+		  Return minutes : seconds
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Function SecondsForMode(mode As Modes) As Integer
+		  DebugLog(CurrentMethodName)
+		  
 		  Select Case mode
 		  Case Modes.Pomodoro
-		    Return 25 * 60
+		    Return PomodoroMinutesDuration * 60
 		  Case Modes.ShortBreak
-		    Return 5 * 60
+		    Return ShortBreakMinutesDuration * 60
 		  Case Modes.LongBreak
-		    Return 15 * 60
+		    Return LongBreakMinutesDuration * 60
 		  End Select
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
 		Private Sub Tick()
+		  DebugLog(CurrentMethodName)
+		  
 		  Var interval As DateInterval = mFinishTime - DateTime.Now
 		  Var remaining As Integer = interval.Minutes * 60 + interval.Seconds
 		  
 		  If mRemainingSeconds <> remaining Then
 		    mRemainingSeconds = remaining
-		    RaiseEvent RemainingSecondsChanged(SecondsForMode(mMode), mRemainingSeconds)
+		    Var minutesSeconds As Pair = RemainingMinutesAndSeconds
+		    RaiseEvent RemainingSecondsChanged(minutesSeconds.Left, minutesSeconds.Right)
 		  End If
 		  
 		  If remaining <= 0 Then
@@ -65,6 +89,8 @@ Protected Class PomodoroViewModel
 
 	#tag Method, Flags = &h21
 		Private Sub TimerAction(sender As Timer)
+		  DebugLog(CurrentMethodName)
+		  
 		  Tick
 		End Sub
 	#tag EndMethod
@@ -79,7 +105,7 @@ Protected Class PomodoroViewModel
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
-		Event RemainingSecondsChanged(totalSeconds As Integer, remainingSeconds As Integer)
+		Event RemainingSecondsChanged(minutes As Integer, seconds As Integer)
 	#tag EndHook
 
 	#tag Hook, Flags = &h0
@@ -95,7 +121,7 @@ Protected Class PomodoroViewModel
 		Private mFinishTime As DateTime
 	#tag EndProperty
 
-	#tag Property, Flags = &h21
+	#tag Property, Flags = &h21, CompatibilityFlags = (TargetConsole and (Target32Bit or Target64Bit)) or  (TargetDesktop and (Target32Bit or Target64Bit)) or  (TargetIOS and (Target64Bit)) or  (TargetAndroid and (Target64Bit))
 		Private mInternalTimer As Timer
 	#tag EndProperty
 
@@ -120,7 +146,9 @@ Protected Class PomodoroViewModel
 			  
 			  RaiseEvent Completed(mPomodorosCompleted)
 			  RaiseEvent ModeChanged(mMode)
-			  RaiseEvent RemainingSecondsChanged(SecondsForMode(mMode), mRemainingSeconds)
+			  
+			  Var minutesSeconds As Pair = RemainingMinutesAndSeconds
+			  RaiseEvent RemainingSecondsChanged(minutesSeconds.Left, minutesSeconds.Right)
 			End Set
 		#tag EndSetter
 		Mode As PomodoroViewModel.Modes
@@ -149,7 +177,7 @@ Protected Class PomodoroViewModel
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return mState
+			   Return mState
 			End Get
 		#tag EndGetter
 		#tag Setter
@@ -176,6 +204,10 @@ Protected Class PomodoroViewModel
 		#tag EndSetter
 		State As PomodoroViewModel.States
 	#tag EndComputedProperty
+
+	#tag Property, Flags = &h0
+		Tag As Variant
+	#tag EndProperty
 
 
 	#tag Enum, Name = Modes, Flags = &h0
@@ -261,7 +293,12 @@ Protected Class PomodoroViewModel
 			Group="Behavior"
 			InitialValue=""
 			Type="PomodoroViewModel.Modes"
-			EditorType=""
+			EditorType="Enum"
+			#tag EnumValues
+				"0 - Pomodoro"
+				"1 - ShortBreak"
+				"2 - LongBreak"
+			#tag EndEnumValues
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="State"
@@ -269,7 +306,11 @@ Protected Class PomodoroViewModel
 			Group="Behavior"
 			InitialValue=""
 			Type="PomodoroViewModel.States"
-			EditorType=""
+			EditorType="Enum"
+			#tag EnumValues
+				"0 - Ready"
+				"1 - Running"
+			#tag EndEnumValues
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class
