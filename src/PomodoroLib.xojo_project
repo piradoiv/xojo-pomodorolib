@@ -8,6 +8,7 @@ MenuBar=MainMenuBar;MainMenuBar.xojo_menu;&h00000000632857FF;&h0000000000000000;
 BuildSteps=Build Automation;Build Automation.xojo_code;&h0000000023FD5FFF;&h0000000000000000;false
 Library=PomodoroLibrary;PomodoroLibrary;&h00000000492A17FF;&h0000000000000000;false
 Class=PomodoroViewModel;PomodoroLibrary/PomodoroViewModel.xojo_code;&h000000002B1617FF;&h00000000492A17FF;false
+DefaultWindow=Window1
 AppMenuBar=MainMenuBar
 MajorVersion=1
 MinorVersion=0

@@ -21,7 +21,7 @@ Begin DesktopWindow Window1
    MinimumHeight   =   64
    MinimumWidth    =   64
    Resizeable      =   True
-   Title           =   "Untitled"
+   Title           =   "Pomodoro #1"
    Type            =   0
    Visible         =   True
    Width           =   600
@@ -36,7 +36,7 @@ Begin DesktopWindow Window1
       State           =   ""
       TabPanelIndex   =   0
    End
-   BeginDesktopSegmentedButton DesktopSegmentedButton SegmentedButton1
+   BeginDesktopSegmentedButton DesktopSegmentedButton ModesSegmentedButton
       Enabled         =   True
       Height          =   24
       Index           =   -2147483648
@@ -44,7 +44,7 @@ Begin DesktopWindow Window1
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   False
+      LockRight       =   True
       LockTop         =   True
       MacButtonStyle  =   0
       Scope           =   2
@@ -73,11 +73,11 @@ Begin DesktopWindow Window1
       Index           =   -2147483648
       Italic          =   False
       Left            =   500
-      LockBottom      =   False
+      LockBottom      =   True
       LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   False
-      LockTop         =   True
+      LockLeft        =   False
+      LockRight       =   True
+      LockTop         =   False
       MacButtonStyle  =   0
       Scope           =   2
       TabIndex        =   2
@@ -107,7 +107,7 @@ Begin DesktopWindow Window1
       LockRight       =   True
       LockTop         =   True
       Multiline       =   False
-      Scope           =   0
+      Scope           =   2
       Selectable      =   False
       TabIndex        =   3
       TabPanelIndex   =   0
@@ -122,7 +122,7 @@ Begin DesktopWindow Window1
       Visible         =   True
       Width           =   560
    End
-   Begin DesktopButton Button1
+   Begin DesktopButton StartStopButton
       AllowAutoDeactivate=   True
       Bold            =   False
       Cancel          =   False
@@ -136,13 +136,13 @@ Begin DesktopWindow Window1
       Index           =   -2147483648
       Italic          =   False
       Left            =   254
-      LockBottom      =   False
+      LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   True
       LockRight       =   False
-      LockTop         =   True
+      LockTop         =   False
       MacButtonStyle  =   0
-      Scope           =   0
+      Scope           =   2
       TabIndex        =   4
       TabPanelIndex   =   0
       TabStop         =   True
@@ -153,7 +153,7 @@ Begin DesktopWindow Window1
       Visible         =   True
       Width           =   80
    End
-   Begin DesktopLabel Label1
+   Begin DesktopLabel CompletedPomodorosLabel
       AllowAutoDeactivate=   True
       Bold            =   False
       Enabled         =   True
@@ -164,13 +164,13 @@ Begin DesktopWindow Window1
       Index           =   -2147483648
       Italic          =   False
       Left            =   20
-      LockBottom      =   False
+      LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   True
       LockRight       =   False
-      LockTop         =   True
+      LockTop         =   False
       Multiline       =   False
-      Scope           =   0
+      Scope           =   2
       Selectable      =   False
       TabIndex        =   5
       TabPanelIndex   =   0
@@ -196,27 +196,42 @@ End
 		End Sub
 	#tag EndEvent
 
+	#tag Event
+		Sub Resized()
+		  Update
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Sub Resizing()
+		  Update
+		End Sub
+	#tag EndEvent
+
+
+	#tag Method, Flags = &h21
+		Private Sub Update()
+		  StartStopButton.Left = Self.Width / 2 - StartStopButton.Width / 2
+		End Sub
+	#tag EndMethod
+
 
 #tag EndWindowCode
 
 #tag Events ViewModel
 	#tag Event
 		Sub Completed(pomodoros As Integer)
-		  System.DebugLog(CurrentMethodName + ": " + pomodoros.ToString)
-		  Label1.Text = "Completed: " + pomodoros.ToString
+		  Title = "Pomodoro #" + Str(pomodoros + 1)
+		  CompletedPomodorosLabel.Text = "Completed: " + pomodoros.ToString
 		End Sub
 	#tag EndEvent
 	#tag Event
 		Sub ModeChanged(newMode As PomodoroViewModel.Modes)
-		  System.DebugLog(CurrentMethodName)
-		  
-		  SegmentedButton1.SelectedSegmentIndex = CType(newMode, Integer)
+		  ModesSegmentedButton.SelectedSegmentIndex = CType(newMode, Integer)
 		End Sub
 	#tag EndEvent
 	#tag Event
 		Sub RemainingSecondsChanged(totalSeconds As Integer, remainingSeconds As Integer)
-		  System.DebugLog(CurrentMethodName + " Total seconds: " + totalSeconds.ToString + " Remaining seconds: " + remainingSeconds.ToString)
-		  
 		  Var minutes As Integer = Floor(remainingSeconds / 60)
 		  Var seconds As Integer = remainingSeconds Mod 60
 		  TimerLabel.Text = minutes.ToString(Nil, "00") + ":" + seconds.ToString(Nil, "00")
@@ -224,20 +239,18 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub StateChanged(newState As PomodoroViewModel.States)
-		  System.DebugLog(CurrentMethodName)
-		  
 		  Select Case newState
 		  Case PomodoroViewModel.States.Ready
-		    Button1.Caption = "Start"
+		    StartStopButton.Caption = "Start"
 		  Case PomodoroViewModel.States.Running
-		    Button1.Caption = "Pause"
+		    StartStopButton.Caption = "Pause"
 		  End Select
 		  
 		  SkipButton.Visible = newState = PomodoroViewModel.States.Running
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events SegmentedButton1
+#tag Events ModesSegmentedButton
 	#tag Event
 		Sub Pressed(segmentIndex As Integer)
 		  ViewModel.Mode = PomodoroViewModel.Modes(segmentIndex)
@@ -251,7 +264,7 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events Button1
+#tag Events StartStopButton
 	#tag Event
 		Sub Pressed()
 		  Var newState As PomodoroViewModel.States = PomodoroViewModel.States.Ready
